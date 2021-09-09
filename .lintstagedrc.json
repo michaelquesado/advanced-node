@@ -1,0 +1,6 @@
+{
+  "*.ts": [
+    "npm run list:fix",
+    "npm run test:staged"
+  ]
+}
