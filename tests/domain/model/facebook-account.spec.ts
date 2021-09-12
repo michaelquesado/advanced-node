@@ -13,22 +13,7 @@ describe('FacebookAccount', () => {
       facebookId: 'any_fb_id'
     })
   })
-  it('should create a accountData', () => {
-    const sut = new FacebookAccount({
-      name: 'any_fb_name',
-      email: 'any_fb_email',
-      facebookId: 'any_fb_id'
-    }, {
-      id: 'any_id'
-    })
-    expect(sut).toEqual({
-      id: 'any_id',
-      name: 'any_fb_name',
-      email: 'any_fb_email',
-      facebookId: 'any_fb_id'
-    })
-  })
-  it('should not update name', () => {
+  it('should create a accountData and not update name', () => {
     const sut = new FacebookAccount({
       name: 'any_fb_name',
       email: 'any_fb_email',
