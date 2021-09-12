@@ -3,7 +3,7 @@ import { LoadUserAccountRepository, SaveFacebookAccountRepository } from '@/data
 import { FacebookAuthenticationService } from '@/data/services/'
 import { AuthenticationError } from '@/domain/errors'
 import { FacebookAuthentication } from '@/domain/features'
-import { FacebookAccount } from '@/domain/models'
+import { AccessToken, FacebookAccount } from '@/domain/models'
 
 import { mocked } from 'ts-jest/utils'
 import { mock, MockProxy } from 'jest-mock-extended'
@@ -61,7 +61,10 @@ describe('Facebook Authentication Service', () => {
   it('should call TokenGenerator with correct params', async () => {
     await sut.perform({ token })
 
-    expect(cryto.generateToken).toHaveBeenCalledWith({ key: 'any_id' })
+    expect(cryto.generateToken).toHaveBeenCalledWith({
+      key: 'any_id',
+      expirationInMs: AccessToken.expirationInMs
+    })
     expect(cryto.generateToken).toHaveBeenCalledTimes(1)
   })
 })
