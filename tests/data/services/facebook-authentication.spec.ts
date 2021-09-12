@@ -13,28 +13,31 @@ jest.mock('@/domain/models/facebook-account')
 
 describe('Facebook Authentication Service', () => {
   let facebookApi: MockProxy<LoadFacebookUserApi>
-  let cryto: MockProxy<TokenGenerator>
+  let crypto: MockProxy<TokenGenerator>
   let userAccountRepo: MockProxy<LoadUserAccountRepository & SaveFacebookAccountRepository>
   let sut: FacebookAuthentication
-  const token = 'any_token'
-  beforeEach(() => {
+  let token: string
+  beforeAll(() => {
+    token = 'any_token'
     facebookApi = mock()
-    cryto = mock()
-    cryto.generateToken.mockResolvedValue('any_generated_token')
-    userAccountRepo = mock()
-    userAccountRepo.load.mockResolvedValue(undefined)
-    userAccountRepo.saveWithFacebook.mockResolvedValue({
-      id: 'any_id'
-    })
     facebookApi.loadUser.mockResolvedValue({
       name: 'any_fb_name',
       email: 'any_fb_email',
       facebookId: 'any_fb_id'
     })
+    userAccountRepo = mock()
+    userAccountRepo.load.mockResolvedValue(undefined)
+    userAccountRepo.saveWithFacebook.mockResolvedValue({
+      id: 'any_id'
+    })
+    crypto = mock()
+    crypto.generateToken.mockResolvedValue('any_generated_token')
+  })
+  beforeEach(() => {
     sut = new FacebookAuthenticationService(
       facebookApi,
       userAccountRepo,
-      cryto
+      crypto
     )
   })
   it('should call LoadFacebookUserApi with correct params', async () => {
@@ -62,11 +65,11 @@ describe('Facebook Authentication Service', () => {
   it('should call TokenGenerator with correct params', async () => {
     await sut.perform({ token })
 
-    expect(cryto.generateToken).toHaveBeenCalledWith({
+    expect(crypto.generateToken).toHaveBeenCalledWith({
       key: 'any_id',
       expirationInMs: AccessToken.expirationInMs
     })
-    expect(cryto.generateToken).toHaveBeenCalledTimes(1)
+    expect(crypto.generateToken).toHaveBeenCalledTimes(1)
   })
   it('should return a AccessToken on success', async () => {
     const authResult = await sut.perform({ token })
@@ -92,7 +95,7 @@ describe('Facebook Authentication Service', () => {
     await expect(promise).rejects.toThrow(new Error('save_error'))
   })
   it('should rethrow if TokenGenerator throws', async () => {
-    cryto.generateToken.mockRejectedValueOnce(new Error('token_error'))
+    crypto.generateToken.mockRejectedValueOnce(new Error('token_error'))
     const promise = sut.perform({ token })
 
     await expect(promise).rejects.toThrow(new Error('token_error'))
