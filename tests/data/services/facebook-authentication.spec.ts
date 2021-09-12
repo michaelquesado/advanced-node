@@ -20,6 +20,7 @@ describe('Facebook Authentication Service', () => {
   beforeEach(() => {
     facebookApi = mock()
     cryto = mock()
+    cryto.generateToken.mockResolvedValue('any_generated_token')
     userAccountRepo = mock()
     userAccountRepo.load.mockResolvedValue(undefined)
     userAccountRepo.saveWithFacebook.mockResolvedValueOnce({
@@ -66,5 +67,10 @@ describe('Facebook Authentication Service', () => {
       expirationInMs: AccessToken.expirationInMs
     })
     expect(cryto.generateToken).toHaveBeenCalledTimes(1)
+  })
+  it('should return a AccessToken on success', async () => {
+    const authResult = await sut.perform({ token })
+
+    expect(authResult).toEqual(new AccessToken('any_generated_token'))
   })
 })
