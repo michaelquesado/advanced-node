@@ -52,7 +52,32 @@ describe('PgUserAccountRepository', () => {
         email: 'any_email'
       })
 
-      expect(userPg?.id).toEqual(1)
+      expect(userPg?.id).toBe(1)
+    })
+    it('should update an account if id is defined', async () => {
+      await userRepo.save({
+        email: 'any_email',
+        name: 'any_name',
+        facebookId: 'any_fb_id'
+      })
+
+      await sut.saveWithFacebook({
+        id: '1',
+        email: 'new_email',
+        name: 'new_name',
+        facebookId: 'new_fb_id'
+      })
+
+      const userPg = await userRepo.findOne({
+        id: 1
+      })
+
+      expect(userPg).toEqual({
+        id: 1,
+        email: 'any_email',
+        name: 'new_name',
+        facebookId: 'new_fb_id'
+      })
     })
   })
 })
