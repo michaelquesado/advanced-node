@@ -15,7 +15,9 @@
       "@/tests/*": ["../tests/*"]
     },
     "strict": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
   "include": ["src", "tests"]
 }
