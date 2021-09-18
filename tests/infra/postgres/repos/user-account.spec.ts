@@ -1,36 +1,18 @@
-import { LoadUserAccountRepository } from '@/data/contracts/repos/user-account'
-import { IBackup, newDb } from 'pg-mem'
+import { PgUser } from '@/infra/postgres/entities'
+import { PgUserAccountRepository } from '@/infra/postgres/repos/'
+import { IBackup, IMemoryDb, newDb } from 'pg-mem'
 
-import { Column, Entity, getConnection, getRepository, PrimaryGeneratedColumn, Repository } from 'typeorm'
+import { getConnection, getRepository, Repository } from 'typeorm'
 
-class PgUserAccountRepository implements LoadUserAccountRepository {
-  async load (params: LoadUserAccountRepository.Params): Promise<LoadUserAccountRepository.Result> {
-    const userRepo = getRepository(PgUser)
-    const pgUser = await userRepo.findOne({ email: params.email })
-    if (pgUser !== undefined) {
-      return {
-        id: pgUser.id.toString(),
-        name: pgUser.name ?? undefined
-      }
-    }
-  }
+const makeFakeDB = async (entities?: any[]): Promise<IMemoryDb> => {
+  const db = newDb()
+  const connection = await db.adapters.createTypeormConnection({
+    type: 'postgres',
+    entities: entities ?? ['src/infra/postgres/entities/index.ts']
+  })
+  await connection.synchronize()
+  return db
 }
-
-@Entity({ name: 'usuarios' })
-class PgUser {
-  @PrimaryGeneratedColumn()
-  id!: number
-
-  @Column({ name: 'nome', nullable: true })
-  name?: string
-
-  @Column()
-  email!: string
-
-  @Column({ name: 'id_facebook', nullable: true })
-  facebookId?: string
-}
-
 describe('PgUserAccountRepository', () => {
   describe('load', () => {
     let userRepo: Repository<PgUser>
@@ -38,12 +20,7 @@ describe('PgUserAccountRepository', () => {
     let sut: PgUserAccountRepository
 
     beforeAll(async () => {
-      const db = newDb()
-      const connection = await db.adapters.createTypeormConnection({
-        type: 'postgres',
-        entities: [PgUser]
-      })
-      await connection.synchronize()
+      const db = await makeFakeDB([PgUser])
       backup = db.backup()
       userRepo = getRepository(PgUser)
     })
@@ -52,8 +29,8 @@ describe('PgUserAccountRepository', () => {
       await getConnection().close()
     })
 
-    beforeEach(async () => {
-      await backup.restore()
+    beforeEach(() => {
+      backup.restore()
       sut = new PgUserAccountRepository()
     })
     it('should return an account if email exists', async () => {
