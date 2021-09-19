@@ -4,6 +4,7 @@ import { AccessToken } from '@/domain/models'
 import { mock, MockProxy } from 'jest-mock-extended'
 import { FacebookLoginController } from '@/application/controllers'
 import { RequiredFieldError, ServerError } from '@/application/errors'
+import { unauthorized } from '@/application/helpers'
 
 describe('FacebookLoginController', () => {
   let facebookAuth: MockProxy<FacebookAuthentication>
@@ -57,7 +58,7 @@ describe('FacebookLoginController', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 401,
-      data: new AuthenticationError()
+      data: unauthorized()
     })
   })
 
