@@ -1,15 +1,15 @@
 class FacebookLoginController {
-  async handle (params: { token: string }): Promise<HttpResponse> {
+  async handle (httpRequest: any): Promise<HttpResponse> {
     return {
       statusCode: 400,
-      body: new Error('Token must be provided')
+      data: new Error('Token must be provided')
     }
   }
 }
 
 type HttpResponse = {
   statusCode: number
-  body: any
+  data: any
 }
 
 describe('FacebookLoginController', () => {
@@ -20,7 +20,18 @@ describe('FacebookLoginController', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 400,
-      body: new Error('Token must be provided')
+      data: new Error('Token must be provided')
+    })
+  })
+
+  it('should return 400 if token is null', async () => {
+    const sut = new FacebookLoginController()
+
+    const httpResponse = await sut.handle({ token: '' })
+
+    expect(httpResponse).toEqual({
+      statusCode: 400,
+      data: new Error('Token must be provided')
     })
   })
 })
