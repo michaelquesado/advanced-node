@@ -1,6 +1,6 @@
 import { LoadFacebookUserApi } from '@/domain/contracts/apis/'
 import { LoadUserAccountRepository, SaveFacebookAccountRepository } from '@/domain/contracts/repos/user-account'
-import { FacebookAuthenticationService } from '@/domain/use-cases'
+import { FacebookAuthenticationUseCase } from '@/domain/use-cases'
 import { AuthenticationError } from '@/domain/entities/errors'
 import { FacebookAuthentication } from '@/domain/features'
 import { AccessToken, FacebookAccount } from '@/domain/entities'
@@ -34,7 +34,7 @@ describe('Facebook Authentication Service', () => {
     crypto.generateToken.mockResolvedValue('any_generated_token')
   })
   beforeEach(() => {
-    sut = new FacebookAuthenticationService(
+    sut = new FacebookAuthenticationUseCase(
       facebookApi,
       userAccountRepo,
       crypto
