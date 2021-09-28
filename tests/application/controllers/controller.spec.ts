@@ -6,7 +6,7 @@ import { ServerError } from '@/application/errors'
 
 jest.mock('@/application/validation/validator-composite')
 
-class ControllerStun extends Controller {
+class ControllerStub extends Controller {
   result: HttpResponse = {
     statusCode: 200,
     data: 'any_data'
@@ -17,10 +17,10 @@ class ControllerStun extends Controller {
   }
 }
 describe('FacebookLoginController', () => {
-  let sut: ControllerStun
+  let sut: ControllerStub
 
   beforeEach(() => {
-    sut = new ControllerStun()
+    sut = new ControllerStub()
   })
 
   it('should return 400 if validation fails', async () => {
