@@ -5,7 +5,9 @@ import { FacebookAccount, AccessToken } from '@/domain/entities/index'
 import { TokenGenerator } from '@/domain/contracts/crypto/'
 
 type Setup = (facebookApi: LoadFacebookUserApi, userAccountRepo: LoadUserAccountRepository & SaveFacebookAccountRepository, crypto: TokenGenerator) => FacebookAuthentication
-export type FacebookAuthentication = (params: { token: string }) => Promise<{ accessToken: string }>
+type Input = { token: string }
+type Output = { accessToken: string }
+export type FacebookAuthentication = (params: Input) => Promise<Output>
 
 export const setupFacebookAuthenticationUseCase: Setup = (
   facebookApi,
