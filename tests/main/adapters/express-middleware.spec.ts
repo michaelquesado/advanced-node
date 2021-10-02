@@ -23,5 +23,19 @@ describe('ExpressMiddleware', () => {
     await sut(req, res, next)
 
     expect(middleware.handler).toHaveBeenCalledWith({ any: 'any' })
+    expect(middleware.handler).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call handle with empty value', async () => {
+    const middleware = mock<Middleware>()
+    const req = getMockReq({ headers: { } })
+    const res = getMockRes().res
+    const next = getMockRes().next
+    const sut = setupMiddlewareAdapter(middleware)
+
+    await sut(req, res, next)
+
+    expect(middleware.handler).toHaveBeenCalledWith({ })
+    expect(middleware.handler).toHaveBeenCalledTimes(1)
   })
 })
