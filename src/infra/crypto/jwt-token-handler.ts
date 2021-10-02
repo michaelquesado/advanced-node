@@ -1,4 +1,4 @@
-import { TokenGenerator } from '@/domain/contracts/crypto'
+import { TokenGenerator, TokenValidator } from '@/domain/contracts/crypto'
 
 import jwt from 'jsonwebtoken'
 
@@ -8,5 +8,9 @@ export class JwtTokenHandler implements TokenGenerator {
   async generateToken ({ expirationInMs, key }: TokenGenerator.Params): Promise<TokenGenerator.Result> {
     const expiresInSeconds = expirationInMs / 1000
     return jwt.sign({ key }, this.secret, { expiresIn: expiresInSeconds })
+  }
+
+  async validateToken ({ token }: TokenValidator.Params): Promise<void> {
+    jwt.verify(token, this.secret)
   }
 }
