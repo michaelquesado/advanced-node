@@ -9,8 +9,7 @@ export class AuthenticationMiddleware {
   constructor (private readonly auth: Authorize) {}
 
   async handle ({ authorization: token }: HttpRequest): Promise<HttpResponse<Model>> {
-    const error = new RequiredStringValidator(token, 'token').validate()
-    if (error !== undefined) {
+    if (!this.validate({ authorization: token })) {
       return forbiddenError()
     }
     try {
@@ -19,6 +18,11 @@ export class AuthenticationMiddleware {
     } catch {
       return forbiddenError()
     }
+  }
+
+  private validate ({ authorization: token }: HttpRequest): boolean {
+    const error = new RequiredStringValidator(token, 'token').validate()
+    return error === undefined
   }
 }
 describe('AuthenticationMiddleware', () => {
