@@ -2,7 +2,7 @@ import { TokenGenerator, TokenValidator } from '@/domain/contracts/crypto'
 
 import jwt, { JwtPayload } from 'jsonwebtoken'
 
-export class JwtTokenHandler implements TokenGenerator {
+export class JwtTokenHandler implements TokenGenerator, TokenValidator {
   constructor (private readonly secret: string) {}
 
   async generateToken ({ expirationInMs, key }: TokenGenerator.Params): Promise<TokenGenerator.Result> {
@@ -10,7 +10,7 @@ export class JwtTokenHandler implements TokenGenerator {
     return jwt.sign({ key }, this.secret, { expiresIn: expiresInSeconds })
   }
 
-  async validateToken ({ token }: TokenValidator.Params): Promise<void> {
+  async validateToken ({ token }: TokenValidator.Params): Promise<TokenValidator.Result> {
     const payload = jwt.verify(token, this.secret) as JwtPayload
     return payload.key
   }
