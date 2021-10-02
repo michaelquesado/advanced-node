@@ -12,7 +12,11 @@ export class AuthenticationMiddleware {
     if (error !== undefined) {
       return forbiddenError()
     }
-    await this.auth({ token })
+    try {
+      await this.auth({ token })
+    } catch {
+      return forbiddenError()
+    }
   }
 }
 describe('AuthenticationMiddleware', () => {
@@ -55,5 +59,14 @@ describe('AuthenticationMiddleware', () => {
 
     expect(authorize).toHaveBeenCalledWith({ token: authorization })
     expect(authorize).toHaveBeenCalledTimes(1)
+  })
+  it('should return 403 if Authorize throws', async () => {
+    authorize.mockRejectedValueOnce(new Error('authorize_error'))
+    const httpResponse = await sut.handle({ authorization })
+
+    expect(httpResponse).toEqual({
+      statusCode: 403,
+      data: new ForbiddenError()
+    })
   })
 })
