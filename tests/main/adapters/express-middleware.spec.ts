@@ -64,7 +64,7 @@ describe('ExpressMiddleware', () => {
   it('should add data to req.locals', async () => {
     await sut(req, res, next)
 
-    expect(res.locals).toEqual({
+    expect(req.locals).toEqual({
       prop: 'any_value'
     })
     expect(next).toHaveBeenCalledTimes(1)
