@@ -1,30 +1,6 @@
 import { mock, MockProxy } from 'jest-mock-extended'
-
-interface UploadFile {
-  upload: (input: UploadFile.Params) => Promise<void>
-}
-namespace UploadFile {
-  export type Params = {
-    key: string
-    file: Buffer
-  }
-}
-interface UUIDGenerator {
-  uuid: (input: UUIDGenerator.Params) => UUIDGenerator.Output
-}
-namespace UUIDGenerator {
-  export type Params = {
-    key: string
-  }
-  export type Output = string
-}
-type SetupChangeProfilePicture = (fileStorage: UploadFile, uuidGenerator: UUIDGenerator) => ChangeProfilePicture
-type Input = { id: string, file: Buffer }
-type ChangeProfilePicture = (input: Input) => Promise<void>
-
-const setupChangeProfilePicture: SetupChangeProfilePicture = (fileStorage, uuidGenerator) => async input => {
-  await fileStorage.upload({ file: input.file, key: uuidGenerator.uuid({ key: input.id }) })
-}
+import { UploadFile, UUIDGenerator } from '@/domain/contracts/gateways'
+import { ChangeProfilePicture, setupChangeProfilePicture } from '@/domain/use-cases'
 
 describe('ChangeProfilePicture', () => {
   let uuid: string
