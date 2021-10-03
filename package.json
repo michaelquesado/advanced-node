@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/main",
+    "dev": "ts-node-dev --respawn --transpile-only --inspect=0.0.0.0:9229 src/main",
     "build": "rimraf dist && npx tsc -p tsconfig-build.json",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
@@ -41,6 +42,7 @@
     "pg-mem": "^1.9.11",
     "supertest": "^6.1.6",
     "ts-jest": "^27.0.5",
+    "ts-node-dev": "^1.1.8",
     "typescript": "^4.4.2"
   },
   "engines": {
