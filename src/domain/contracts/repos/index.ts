@@ -1,2 +1,2 @@
 export * from './user-account'
-export * from './user-profile-picture'
+export * from './user-profile'
