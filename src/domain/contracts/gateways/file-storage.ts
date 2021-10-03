@@ -1,6 +1,6 @@
 
 export interface UploadFile {
-  upload: (input: UploadFile.Params) => Promise<void>
+  upload: (input: UploadFile.Params) => Promise<UploadFile.Result>
 }
 
 export namespace UploadFile {
@@ -8,4 +8,5 @@ export namespace UploadFile {
     key: string
     file: Buffer
   }
+  export type Result = string
 }
