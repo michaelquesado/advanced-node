@@ -10,5 +10,5 @@ export const setupMiddlewareAdapter: Setup = middleware => async (req, res, next
     res.locals = { ...res.locals, ...Object.fromEntries(entries) }
     next()
   }
-  res.status(statusCode).json(data)
+  res.status(statusCode).json({ error: data.message })
 }
