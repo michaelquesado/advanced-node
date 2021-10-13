@@ -9,7 +9,8 @@ export const setupChangeProfilePicture: SetupChangeProfilePicture = (fileStorage
   let pictureUrl: string | undefined
   if (input.file !== undefined) {
     pictureUrl = await fileStorage.upload({ file: input.file, key: uuidGenerator.uuid({ key: input.id }) })
+  } else {
+    await userProfilePictureRepo.load({ id: input.id })
   }
   await userProfilePictureRepo.savePicture({ pictureUrl })
-  await userProfilePictureRepo.load({ id: input.id })
 }
