@@ -4,6 +4,7 @@ export interface SaveUserPicture {
 export namespace SaveUserPicture {
   export type Params = {
     pictureUrl?: string
+    initials?: string
   }
 }
 
@@ -15,7 +16,6 @@ export namespace LoadUserProfile {
     id: string
   }
   export type Result = undefined | {
-    id: string
     name?: string
   }
 }
