@@ -1,3 +1,4 @@
+import { UserProfile } from '@/domain/entities/user-profile'
 import { UUIDGenerator, UploadFile } from '@/domain/contracts/gateways'
 import { LoadUserProfile, SaveUserPicture } from '@/domain/contracts/repos'
 
@@ -6,20 +7,13 @@ type Input = { id: string, file?: Buffer }
 export type ChangeProfilePicture = (input: Input) => Promise<void>
 
 export const setupChangeProfilePicture: SetupChangeProfilePicture = (fileStorage, uuidGenerator, userProfilePictureRepo) => async input => {
-  let pictureUrl: string | undefined
-  let initials: string | undefined
+  const data: { pictureUrl?: string, name?: string} = {}
   if (input.file !== undefined) {
-    pictureUrl = await fileStorage.upload({ file: input.file, key: uuidGenerator.uuid({ key: input.id }) })
+    data.pictureUrl = await fileStorage.upload({ file: input.file, key: uuidGenerator.uuid({ key: input.id }) })
   } else {
-    const user = await userProfilePictureRepo.load({ id: input.id })
-    if (user?.name !== undefined) {
-      const letters = user.name.match(/\b(.)/g) ?? []
-      if (letters.length > 1) {
-        initials = `${letters?.shift()?.toUpperCase() ?? ''}${letters?.pop()?.toUpperCase() ?? ''}`
-      } else {
-        initials = user.name.substr(0, 2).toUpperCase()
-      }
-    }
+    data.name = (await userProfilePictureRepo.load({ id: input.id }))?.name
   }
-  await userProfilePictureRepo.savePicture({ pictureUrl, initials })
+  const userProfile = new UserProfile(input.id)
+  userProfile.setPicture(data)
+  await userProfilePictureRepo.savePicture(userProfile)
 }
