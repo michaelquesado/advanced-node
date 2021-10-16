@@ -60,4 +60,15 @@ describe('UserProfile', () => {
       initials: 'M'
     })
   })
+  it('should create a UserProfile with initials when pictureUrl is provided', () => {
+    sut.setPicture({
+      pictureUrl: undefined,
+      name: ''
+    })
+    expect(sut).toEqual({
+      id: 'any_id',
+      pictureUrl: undefined,
+      initials: undefined
+    })
+  })
 })
