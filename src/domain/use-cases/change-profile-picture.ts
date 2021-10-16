@@ -4,10 +4,11 @@ import { LoadUserProfile, SaveUserPicture } from '@/domain/contracts/repos'
 
 type SetupChangeProfilePicture = (fileStorage: UploadFile, uuidGenerator: UUIDGenerator, userProfilePictureRepo: SaveUserPicture & LoadUserProfile) => ChangeProfilePicture
 type Input = { id: string, file?: Buffer }
-export type ChangeProfilePicture = (input: Input) => Promise<void>
+type Output = { pictureUrl?: string, name?: string }
+export type ChangeProfilePicture = (input: Input) => Promise<Output>
 
 export const setupChangeProfilePicture: SetupChangeProfilePicture = (fileStorage, uuidGenerator, userProfilePictureRepo) => async input => {
-  const data: { pictureUrl?: string, name?: string} = {}
+  const data: { pictureUrl?: string, name?: string } = {}
   if (input.file !== undefined) {
     data.pictureUrl = await fileStorage.upload({ file: input.file, key: uuidGenerator.uuid({ key: input.id }) })
   } else {
@@ -16,4 +17,5 @@ export const setupChangeProfilePicture: SetupChangeProfilePicture = (fileStorage
   const userProfile = new UserProfile(input.id)
   userProfile.setPicture(data)
   await userProfilePictureRepo.savePicture(userProfile)
+  return userProfile
 }
