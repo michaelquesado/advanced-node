@@ -1,9 +1,9 @@
-import { PgUser } from '@/infra/postgres/entities'
-import { PgUserAccountRepository } from '@/infra/postgres/repos/'
+import { PgUser } from '@/infra/repos/postgres/entities'
+import { PgUserAccountRepository } from '@/infra/repos/postgres'
 import { IBackup } from 'pg-mem'
 
 import { getConnection, getRepository, Repository } from 'typeorm'
-import { makeFakeDB } from '@/tests/infra/postgres/mocks/'
+import { makeFakeDB } from '@/../tests/infra/repos/postgres/mocks'
 
 describe('PgUserAccountRepository', () => {
   let userRepo: Repository<PgUser>
