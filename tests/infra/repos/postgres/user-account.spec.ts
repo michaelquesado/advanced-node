@@ -73,7 +73,7 @@ describe('PgUserAccountRepository', () => {
         id: 1
       })
 
-      expect(userPg).toEqual({
+      expect(userPg).toMatchObject({
         id: 1,
         email: 'any_email',
         name: 'new_name',
