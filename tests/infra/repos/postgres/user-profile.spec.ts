@@ -42,4 +42,13 @@ describe('PgUserProfileRepository', () => {
       })
     })
   })
+  describe('load', () => {
+    it('should return a name if user profile exists', async () => {
+      const { id } = await userRepo.save({ email: 'any_email', name: 'any_name' })
+
+      const userPg = await sut.load({ id: id.toString() })
+
+      expect(userPg?.name).toBe('any_name')
+    })
+  })
 })
