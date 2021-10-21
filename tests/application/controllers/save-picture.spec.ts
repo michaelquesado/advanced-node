@@ -1,4 +1,4 @@
-import { SavePictureController } from '@/application/controllers'
+import { SavePictureController, Controller } from '@/application/controllers'
 import { RequiredFieldError, InvalidMimeTypeError, InvalidSizeFile } from '@/application/errors'
 
 describe('SavePictureController', () => {
@@ -106,5 +106,8 @@ describe('SavePictureController', () => {
       statusCode: 200,
       data: { initials: 'any_initials', pictureUrl: 'any_url' }
     })
+  })
+  it('should extends Controller', async () => {
+    expect(sut).toBeInstanceOf(Controller)
   })
 })
