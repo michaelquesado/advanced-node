@@ -1,18 +1,18 @@
 import { RequiredFieldError } from '@/application/errors'
-import { HttpResponse, badRequest } from '@/application/helpers'
+import { HttpResponse, badRequest, ok } from '@/application/helpers'
 import { ChangeProfilePicture } from '@/domain/use-cases'
 
 type HttpRequest = { file: { buffer: Buffer, mimeType: string }, userId: string }
-type Model = Error
+type Model = Error | { initials?: string, pictureUrl?: string }
 class SavePictureController {
   constructor (private readonly changeProfilePicture: ChangeProfilePicture) {}
 
-  async handle ({ file, userId: id }: HttpRequest): Promise<HttpResponse<Model> | undefined > {
+  async handle ({ file, userId: id }: HttpRequest): Promise<HttpResponse<Model>> {
     if (file === undefined || file === null || file.buffer.length < 1) return badRequest(new RequiredFieldError('file'))
     if (!['image/png', 'image/jpg', 'image/jpeg'].includes(file.mimeType)) return badRequest(new InvalidMimeTypeError(['jpeg', 'png']))
     if (file.buffer.length > 5 * 1024 * 1024) return badRequest(new InvalidSizeFile())
-    await this.changeProfilePicture({ id, file: file.buffer })
-    return undefined
+    const data = await this.changeProfilePicture({ id, file: file.buffer })
+    return ok(data)
   }
 }
 
@@ -41,7 +41,7 @@ describe('SavePictureController', () => {
     mimeType = 'image/jpeg'
     userId = 'any_id'
     file = { buffer, mimeType }
-    changeProfilePicture = jest.fn()
+    changeProfilePicture = jest.fn().mockResolvedValue({ initials: 'any_initials', pictureUrl: 'any_url' })
   })
   beforeEach(() => {
     sut = new SavePictureController(changeProfilePicture)
@@ -123,5 +123,15 @@ describe('SavePictureController', () => {
 
     expect(changeProfilePicture).toHaveBeenCalledTimes(1)
     expect(changeProfilePicture).toHaveBeenCalledWith({ id: userId, file: buffer })
+  })
+  it('should return 200 with valid data', async () => {
+    const response = await sut.handle({
+      file, userId
+    })
+
+    expect(response).toEqual({
+      statusCode: 200,
+      data: { initials: 'any_initials', pictureUrl: 'any_url' }
+    })
   })
 })
