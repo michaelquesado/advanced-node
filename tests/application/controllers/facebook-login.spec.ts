@@ -1,5 +1,5 @@
 import { AuthenticationError } from '@/domain/entities/errors'
-import { FacebookLoginController } from '@/application/controllers'
+import { Controller, FacebookLoginController } from '@/application/controllers'
 import { unauthorized } from '@/application/helpers'
 import { RequiredStringValidator } from '@/application/validation'
 
@@ -15,6 +15,9 @@ describe('FacebookLoginController', () => {
     sut = new FacebookLoginController(facebookAuth)
   })
 
+  it('should extends Controller', async () => {
+    expect(sut).toBeInstanceOf(Controller)
+  })
   it('should return 400 if validation fails', async () => {
     const validators = sut.buildValidators({ token: 'any_token' })
 
