@@ -1,20 +1,5 @@
 import { InvalidMimeTypeError } from '@/application/errors'
-
-type Extension = 'png' | 'jpeg' | 'jpg'
-
-class AllowedMimeTypes {
-  constructor (
-    private readonly allowed: Extension[],
-    private readonly mimeType: string
-  ) {}
-
-  validate (): Error | undefined {
-    const [, type] = this.mimeType.split('/')
-    if (!this.allowed.includes(type as Extension)) {
-      return new InvalidMimeTypeError(this.allowed)
-    }
-  }
-}
+import { AllowedMimeTypes } from '@/application/validation'
 
 describe('AllowedMimeTypes', () => {
   it('should return InvalidMimeTypeError if mimeType is invalid', () => {

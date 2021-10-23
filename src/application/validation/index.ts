@@ -1,3 +1,4 @@
+export * from './allowed-mime-type'
 export * from './required-validator'
 export * from './validator'
 export * from './validator-composite'
