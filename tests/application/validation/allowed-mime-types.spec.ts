@@ -9,7 +9,8 @@ class AllowedMimeTypes {
   ) {}
 
   validate (): Error | undefined {
-    if (this.allowed.includes('png') && this.mimeType !== 'image/png') return new InvalidMimeTypeError(this.allowed)
+    const [, type] = this.mimeType.split('/')
+    if (!this.allowed.includes(type as Extension)) return new InvalidMimeTypeError(this.allowed)
   }
 }
 
@@ -23,6 +24,20 @@ describe('AllowedMimeTypes', () => {
   })
   it('should return undefined if mimeType is valid', () => {
     const sut = new AllowedMimeTypes(['png'], 'image/png')
+
+    const error = sut.validate()
+
+    expect(error).toBeUndefined()
+  })
+  it('should return InvalidMimeTypeError if mimeType is invalid', () => {
+    const sut = new AllowedMimeTypes(['jpeg'], 'image/png')
+
+    const error = sut.validate()
+
+    expect(error).toEqual(new InvalidMimeTypeError(['jpeg']))
+  })
+  it('should return undefined if mimeType is valid', () => {
+    const sut = new AllowedMimeTypes(['jpeg'], 'image/jpeg')
 
     const error = sut.validate()
 
