@@ -1,3 +1,4 @@
+export * from './max-file-size'
 export * from './allowed-mime-type'
 export * from './required-validator'
 export * from './validator'
