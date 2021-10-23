@@ -1,6 +1,6 @@
 import { InvalidMimeTypeError } from '@/application/errors'
 
-type Extension = 'png' | 'jpeg'
+type Extension = 'png' | 'jpeg' | 'jpg'
 
 class AllowedMimeTypes {
   constructor (
@@ -10,7 +10,9 @@ class AllowedMimeTypes {
 
   validate (): Error | undefined {
     const [, type] = this.mimeType.split('/')
-    if (!this.allowed.includes(type as Extension)) return new InvalidMimeTypeError(this.allowed)
+    if (!this.allowed.includes(type as Extension)) {
+      return new InvalidMimeTypeError(this.allowed)
+    }
   }
 }
 
@@ -42,5 +44,19 @@ describe('AllowedMimeTypes', () => {
     const error = sut.validate()
 
     expect(error).toBeUndefined()
+  })
+  it('should return undefined if mimeType is valid', () => {
+    const sut = new AllowedMimeTypes(['jpg'], 'image/jpg')
+
+    const error = sut.validate()
+
+    expect(error).toBeUndefined()
+  })
+  it('should return InvalidMimeTypeError if mimeType is invalid', () => {
+    const sut = new AllowedMimeTypes(['jpg'], 'image/png')
+
+    const error = sut.validate()
+
+    expect(error).toEqual(new InvalidMimeTypeError(['jpg']))
   })
 })
