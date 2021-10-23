@@ -24,7 +24,7 @@ describe('SavePictureController', () => {
 
     expect(validators).toEqual([
       new Required(file, 'file'),
-      new RequiredBuffer(buffer),
+      new RequiredBuffer(buffer, 'file'),
       new AllowedMimeTypes(['png', 'jpg', 'jpeg'], mimeType),
       new MaxFileSize(5, buffer)
     ])
