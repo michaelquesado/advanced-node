@@ -2,7 +2,7 @@ import { RequiredFieldError } from '@/application/errors'
 
 export class Required {
   constructor (
-    readonly value: string,
+    readonly value: any,
     readonly field?: string
   ) {}
 
@@ -22,6 +22,20 @@ export class RequiredString extends Required {
 
   override validate (): Error | undefined {
     if (super.validate() !== undefined || this.value === '') {
+      return new RequiredFieldError(this.field)
+    }
+  }
+}
+export class RequiredBuffer extends Required {
+  constructor (
+    override readonly value: Buffer,
+    override readonly field?: string
+  ) {
+    super(value, field)
+  }
+
+  override validate (): Error | undefined {
+    if (super.validate() !== undefined || this.value.length === 0) {
       return new RequiredFieldError(this.field)
     }
   }
