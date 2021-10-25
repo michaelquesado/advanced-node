@@ -35,7 +35,7 @@ describe('SavePictureController', () => {
     })
 
     expect(changeProfilePicture).toHaveBeenCalledTimes(1)
-    expect(changeProfilePicture).toHaveBeenCalledWith({ id: userId, file: buffer })
+    expect(changeProfilePicture).toHaveBeenCalledWith({ id: userId, file })
   })
   it('should return 200 with valid data', async () => {
     const response = await sut.handle({

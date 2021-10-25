@@ -8,7 +8,9 @@ import { UserProfile } from '@/domain/entities/user-profile'
 jest.mock('@/domain/entities/user-profile')
 describe('ChangeProfilePicture', () => {
   let uuid: string
-  let file: Buffer
+  let buffer: Buffer
+  let mimeType: string
+  let file: { buffer: Buffer, mimeType: string }
   let fileStorage: MockProxy<UploadFile & DeleteFile>
   let uuidGenerator: MockProxy<UUIDGenerator>
   let userProfileRepo: MockProxy<SaveUserPicture & LoadUserProfile>
@@ -16,7 +18,9 @@ describe('ChangeProfilePicture', () => {
 
   beforeAll(() => {
     uuid = 'any_random_id'
-    file = Buffer.from('any_buffer')
+    buffer = Buffer.from('any_buffer')
+    mimeType = 'image/png'
+    file = { buffer, mimeType }
     fileStorage = mock()
     fileStorage.upload.mockResolvedValue('any_url')
     uuidGenerator = mock()
@@ -28,9 +32,15 @@ describe('ChangeProfilePicture', () => {
     sut = setupChangeProfilePicture(fileStorage, uuidGenerator, userProfileRepo)
   })
   it('should call UploadFile with correct input', async () => {
-    await sut({ id: uuid, file })
+    await sut({ id: uuid, file: { buffer, mimeType: 'image/png' } })
 
-    expect(fileStorage.upload).toHaveBeenCalledWith({ file, key: uuid })
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: buffer, fileName: `${uuid}.png` })
+    expect(fileStorage.upload).toHaveBeenCalledTimes(1)
+  })
+  it('should call UploadFile with correct input', async () => {
+    await sut({ id: uuid, file: { buffer, mimeType: 'image/jpeg' } })
+
+    expect(fileStorage.upload).toHaveBeenCalledWith({ file: buffer, fileName: `${uuid}.jpeg` })
     expect(fileStorage.upload).toHaveBeenCalledTimes(1)
   })
   it('should not call UploadFile when file is undefined', async () => {
@@ -83,7 +93,7 @@ describe('ChangeProfilePicture', () => {
     expect.assertions(2)
 
     promise.catch(() => {
-      expect(fileStorage.delete).toHaveBeenCalledWith({ key: uuid })
+      expect(fileStorage.delete).toHaveBeenCalledWith({ fileName: uuid })
       expect(fileStorage.delete).toHaveBeenCalledTimes(1)
     })
   })

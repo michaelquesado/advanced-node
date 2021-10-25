@@ -3,7 +3,7 @@ import { UUIDGenerator, UploadFile, DeleteFile } from '@/domain/contracts/gatewa
 import { LoadUserProfile, SaveUserPicture } from '@/domain/contracts/repos'
 
 type SetupChangeProfilePicture = (fileStorage: UploadFile & DeleteFile, uuidGenerator: UUIDGenerator, userProfilePictureRepo: SaveUserPicture & LoadUserProfile) => ChangeProfilePicture
-type Input = { id: string, file?: Buffer }
+type Input = { id: string, file?: { buffer: Buffer, mimeType: string } }
 type Output = { pictureUrl?: string, name?: string }
 export type ChangeProfilePicture = (input: Input) => Promise<Output>
 
@@ -11,7 +11,8 @@ export const setupChangeProfilePicture: SetupChangeProfilePicture = (fileStorage
   const data: { pictureUrl?: string, name?: string } = {}
   const key = uuidGenerator.uuid({ key: input.id })
   if (input.file !== undefined) {
-    data.pictureUrl = await fileStorage.upload({ file: input.file, key })
+    const [, type] = input.file.mimeType.split('/')
+    data.pictureUrl = await fileStorage.upload({ file: input.file.buffer, fileName: `${key}.${type}` })
   } else {
     data.name = (await userProfilePictureRepo.load({ id: input.id }))?.name
   }
@@ -20,7 +21,7 @@ export const setupChangeProfilePicture: SetupChangeProfilePicture = (fileStorage
   try {
     await userProfilePictureRepo.savePicture(userProfile)
   } catch (e) {
-    if (input.file !== undefined) await fileStorage.delete({ key })
+    if (input.file !== undefined) await fileStorage.delete({ fileName: key })
     throw e
   }
   return userProfile
