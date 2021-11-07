@@ -28,18 +28,19 @@ describe('User Routes', () => {
     })
     it('should return 403 if no header authorization is provided', async () => {
       const { status } = await request(app)
-        .post('/api/user/picture')
+        .delete('/api/user/picture')
 
       expect(status).toBe(403)
     })
-    it('should return 204', async () => {
-      const { id } = await userRepo.save({ email: 'any_email', name: 'any_name' })
+    it('should return 200', async () => {
+      const { id } = await userRepo.save({ email: 'any_email', name: 'any name' })
       const authorization = sign({ key: id }, env.secret)
-      const { status } = await request(app)
-        .post('/api/user/picture')
+      const { status, body } = await request(app)
+        .delete('/api/user/picture')
         .set({ authorization })
 
-      expect(status).toBe(204)
+      expect(status).toBe(200)
+      expect(body).toEqual({ pictureUrl: undefined, initials: 'AN' })
     })
   })
 })

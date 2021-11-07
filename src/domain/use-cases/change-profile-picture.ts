@@ -4,7 +4,7 @@ import { LoadUserProfile, SaveUserPicture } from '@/domain/contracts/repos'
 
 type SetupChangeProfilePicture = (fileStorage: UploadFile & DeleteFile, uuidGenerator: UUIDGenerator, userProfilePictureRepo: SaveUserPicture & LoadUserProfile) => ChangeProfilePicture
 type Input = { id: string, file?: { buffer: Buffer, mimeType: string } }
-type Output = { pictureUrl?: string, name?: string }
+type Output = { pictureUrl?: string, initials?: string }
 export type ChangeProfilePicture = (input: Input) => Promise<Output>
 
 export const setupChangeProfilePicture: SetupChangeProfilePicture = (fileStorage, uuidGenerator, userProfilePictureRepo) => async input => {

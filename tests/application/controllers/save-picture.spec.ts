@@ -19,7 +19,7 @@ describe('SavePictureController', () => {
   beforeEach(() => {
     sut = new SavePictureController(changeProfilePicture)
   })
-  it('should return 400 if validation fails', async () => {
+  it('should call buildValidators with correct validators on save', async () => {
     const validators = sut.buildValidators({ file, userId })
 
     expect(validators).toEqual([
@@ -28,6 +28,11 @@ describe('SavePictureController', () => {
       new AllowedMimeTypes(['png', 'jpg', 'jpeg'], mimeType),
       new MaxFileSize(5, buffer)
     ])
+  })
+  it('should call buildValidators with correct validators on delete', async () => {
+    const validators = sut.buildValidators({ file: undefined, userId })
+
+    expect(validators).toEqual([])
   })
   it('should call ChangeProfilePicture with correct inputs', async () => {
     await sut.handle({
