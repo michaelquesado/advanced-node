@@ -8,7 +8,15 @@ import { ServerError } from '@/application/errors'
 const multerAdapter: RequestHandler = (req, res, next) => {
   const upload = multer().single('picture')
   upload(req, res, err => {
-    res.status(500).json({ error: new ServerError(err).message })
+    if (err !== undefined) {
+      return res.status(500).json({ error: new ServerError(err).message })
+    }
+    if (req.file !== undefined) {
+      req.locals = {
+        ...req.locals,
+        file: { buffer: req.file.buffer, mimeType: req.file.mimetype }
+      }
+    }
   })
 }
 
@@ -26,21 +34,25 @@ describe('MulterAdapter', () => {
   let next: NextFunction
 
   beforeAll(() => {
-    uploadSpy = jest.fn().mockImplementation(() => {})
+    uploadSpy = jest.fn().mockImplementation((req, res, next) => {
+      req.file = { buffer: Buffer.from('any'), mimetype: 'any_type' }
+      next()
+    })
     singleSpy = jest.fn().mockImplementation(() => uploadSpy)
     multerSpy = jest.fn().mockImplementation(() => ({ single: singleSpy }))
     fakeMulter = multer as jest.Mocked<typeof multer>
     mocked(fakeMulter).mockImplementation(multerSpy)
 
-    sut = multerAdapter
-    req = getMockReq()
     res = getMockRes().res
     next = getMockRes().next
   })
   beforeEach(() => {
-    sut(req, res, next)
+    req = getMockReq({ locals: { any: 'any' } })
+    sut = multerAdapter
   })
   it('should call single upload with correct input', () => {
+    sut(req, res, next)
+
     expect(multerSpy).toHaveBeenCalledWith()
     expect(multerSpy).toHaveBeenCalledTimes(1)
     expect(singleSpy).toHaveBeenCalledWith('picture')
@@ -58,5 +70,23 @@ describe('MulterAdapter', () => {
     expect(res.status).toHaveBeenCalledTimes(1)
     expect(res.json).toHaveBeenCalledWith({ error: new ServerError(error).message })
     expect(res.json).toHaveBeenCalledTimes(1)
+  })
+  it('should not add file to req.locals', () => {
+    uploadSpy.mockImplementationOnce((req, res, next) => next())
+
+    sut(req, res, next)
+
+    expect(req.locals).toEqual({ any: 'any' })
+  })
+  it('should add file to req.locals', () => {
+    sut(req, res, next)
+
+    expect(req.locals).toEqual({
+      any: 'any',
+      file: {
+        buffer: req.file?.buffer,
+        mimeType: req.file?.mimetype
+      }
+    })
   })
 })
