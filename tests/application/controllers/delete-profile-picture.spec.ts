@@ -10,13 +10,13 @@ describe('DeletePictureController', () => {
     sut = new DeletePictureController(changeProfilePicture)
   })
   it('should call ChangeProfilePicture with correct input', async () => {
-    await sut.handle({ user_id: 'any_user_id' })
+    await sut.handle({ userId: 'any_user_id' })
 
     expect(changeProfilePicture).toHaveBeenCalledWith({ id: 'any_user_id' })
     expect(changeProfilePicture).toHaveBeenCalledTimes(1)
   })
   it('should return 204', async () => {
-    const httpResponse = await sut.handle({ user_id: 'any_user_id' })
+    const httpResponse = await sut.handle({ userId: 'any_user_id' })
 
     expect(httpResponse).toEqual({
       statusCode: 204,
