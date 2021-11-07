@@ -12,20 +12,32 @@ const multerAdapter: RequestHandler = (req, res, next) => {
 jest.mock('multer')
 
 describe('MulterAdapter', () => {
-  it('should call single upload with correct input', () => {
-    const uploadSpy = jest.fn()
-    const singleSpy = jest.fn().mockImplementationOnce(() => uploadSpy)
-    const multerSpy = jest.fn().mockImplementationOnce(() => ({ single: singleSpy }))
-    const fakeMulter = multer as jest.Mocked<typeof multer>
+  let uploadSpy: jest.Mock
+  let singleSpy: jest.Mock
+  let multerSpy: jest.Mock
+  let fakeMulter: jest.Mocked<typeof multer>
+
+  let sut: RequestHandler
+  let req: Request
+  let res: Response
+  let next: NextFunction
+
+  beforeAll(() => {
+    uploadSpy = jest.fn()
+    singleSpy = jest.fn().mockImplementationOnce(() => uploadSpy)
+    multerSpy = jest.fn().mockImplementationOnce(() => ({ single: singleSpy }))
+    fakeMulter = multer as jest.Mocked<typeof multer>
     mocked(fakeMulter).mockImplementationOnce(multerSpy)
 
-    const sut = multerAdapter
-    const req: Request = getMockReq()
-    const res: Response = getMockRes().res
-    const next: NextFunction = getMockRes().next
-
+    sut = multerAdapter
+    req = getMockReq()
+    res = getMockRes().res
+    next = getMockRes().next
+  })
+  beforeEach(() => {
     sut(req, res, next)
-
+  })
+  it('should call single upload with correct input', () => {
     expect(multerSpy).toHaveBeenCalledWith()
     expect(multerSpy).toHaveBeenCalledTimes(1)
     expect(singleSpy).toHaveBeenCalledWith('picture')
