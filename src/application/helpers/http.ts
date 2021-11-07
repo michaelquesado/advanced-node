@@ -8,10 +8,6 @@ export const ok = <T = any> (data: T): HttpResponse<T> => ({
   statusCode: 200,
   data
 })
-export const noContent = (): HttpResponse => ({
-  statusCode: 204,
-  data: undefined
-})
 
 export const badRequest = (error: Error): HttpResponse<Error> => ({
   statusCode: 400,
