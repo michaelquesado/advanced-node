@@ -11,7 +11,7 @@ export class PgUserProfileRepository implements SaveUserPicture, LoadUserProfile
 
   async load ({ id }: LoadUserProfile.Params): Promise<LoadUserProfile.Result> {
     const userRepo = getRepository(PgUser)
-    const userPg = await userRepo.findOne({ where: { id: parseInt(id) }, select: ['name'] })
+    const userPg = await userRepo.findOne({ where: { id: parseInt(id) } })
     if (userPg !== undefined) {
       return {
         name: userPg.name ?? undefined

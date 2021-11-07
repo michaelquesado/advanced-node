@@ -55,7 +55,7 @@ describe('PgUserProfileRepository', () => {
 
       const userPg = await sut.load({ id: id.toString() })
 
-      expect(userPg?.name).toBeUndefined()
+      expect(userPg?.name).toBe(undefined)
     })
     it('should return undefined if user profile does not exists', async () => {
       const userPg = await sut.load({ id: '1' })
