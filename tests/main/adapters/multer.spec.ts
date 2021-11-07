@@ -17,6 +17,7 @@ const multerAdapter: RequestHandler = (req, res, next) => {
         file: { buffer: req.file.buffer, mimeType: req.file.mimetype }
       }
     }
+    next()
   })
 }
 
@@ -88,5 +89,11 @@ describe('MulterAdapter', () => {
         mimeType: req.file?.mimetype
       }
     })
+  })
+  it('should call next on success', () => {
+    sut(req, res, next)
+
+    expect(next).toHaveBeenCalledWith()
+    expect(next).toHaveBeenCalledTimes(1)
   })
 })
