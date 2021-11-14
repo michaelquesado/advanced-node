@@ -33,4 +33,19 @@ export class PgConnection {
     if (this.queryRunner === undefined) throw new ConnectionNotFoundError()
     await this.queryRunner.startTransaction()
   }
+
+  public async closeTransaction (): Promise<void> {
+    if (this.queryRunner === undefined) throw new ConnectionNotFoundError()
+    await this.queryRunner.release()
+  }
+
+  public async commit (): Promise<void> {
+    if (this.queryRunner === undefined) throw new ConnectionNotFoundError()
+    await this.queryRunner.commitTransaction()
+  }
+
+  public async rollback (): Promise<void> {
+    if (this.queryRunner === undefined) throw new ConnectionNotFoundError()
+    await this.queryRunner.rollbackTransaction()
+  }
 }
