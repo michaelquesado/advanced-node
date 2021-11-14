@@ -1,28 +1,35 @@
 import { PgUser } from '@/infra/repos/postgres/entities'
-import { PgUserProfileRepository } from '@/infra/repos/postgres'
-import { IBackup } from 'pg-mem'
+import { PgUserProfileRepository, PgRepository } from '@/infra/repos/postgres'
+import { PgConnection } from '@/infra/repos/postgres/helpers'
+import { makeFakeDB } from '@/tests/infra/repos/postgres/mocks'
 
-import { getConnection, getRepository, Repository } from 'typeorm'
-import { makeFakeDB } from '@/../tests/infra/repos/postgres/mocks'
+import { IBackup } from 'pg-mem'
+import { Repository } from 'typeorm'
 
 describe('PgUserProfileRepository', () => {
   let userRepo: Repository<PgUser>
   let backup: IBackup
   let sut: PgUserProfileRepository
+  let connection: PgConnection
 
   beforeAll(async () => {
+    connection = PgConnection.getInstance()
     const db = await makeFakeDB([PgUser])
     backup = db.backup()
-    userRepo = getRepository(PgUser)
+    userRepo = connection.getRepository(PgUser)
   })
 
   afterAll(async () => {
-    await getConnection().close()
+    await connection.disconnect()
   })
 
   beforeEach(() => {
     backup.restore()
     sut = new PgUserProfileRepository()
+  })
+
+  it('show extends PgRepository', () => {
+    expect(sut).toBeInstanceOf(PgRepository)
   })
   describe('savePicture', () => {
     it('should return an account if email exists', async () => {

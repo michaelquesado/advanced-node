@@ -4,12 +4,13 @@ import { app } from '@/main/config/app'
 
 import { IBackup } from 'pg-mem'
 import request from 'supertest'
-import { getConnection } from 'typeorm'
 import { makeFakeDB } from '@/../tests/infra/repos/postgres/mocks'
+import { PgConnection } from '@/infra/repos/postgres/helpers'
 
 describe('Login Routes', () => {
   describe('POST /login/facebook', () => {
     let backup: IBackup
+    let connection: PgConnection
     const loadUserSpy = jest.fn()
 
     jest.mock('@/infra/gateways/facebook-api', () => ({
@@ -17,12 +18,13 @@ describe('Login Routes', () => {
     }))
 
     beforeAll(async () => {
+      connection = PgConnection.getInstance()
       const db = await makeFakeDB([PgUser])
       backup = db.backup()
     })
 
     afterAll(async () => {
-      await getConnection().close()
+      await connection.disconnect()
     })
 
     beforeEach(() => {
