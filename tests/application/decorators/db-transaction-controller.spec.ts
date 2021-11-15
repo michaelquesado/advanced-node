@@ -1,5 +1,6 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 import { Controller } from '@/application/controllers'
+import { HttpResponse } from '@/application/helpers'
 
 class DbTransactionController {
   constructor (
@@ -7,14 +8,15 @@ class DbTransactionController {
     private readonly db: DbTransaction
   ) {}
 
-  async perform (httpRequest: any): Promise<void> {
+  async perform (httpRequest: any): Promise<HttpResponse | undefined> {
     try {
       await this.db.openTransaction()
-      await this.decoratee.perform(httpRequest)
+      const response = await this.decoratee.perform(httpRequest)
       await this.db.commit()
+      await this.db.closeTransaction()
+      return response
     } catch (error) {
       await this.db.rollback()
-    } finally {
       await this.db.closeTransaction()
     }
   }
@@ -34,6 +36,7 @@ describe('DbTransactionController', () => {
   beforeAll(() => {
     db = mock()
     decoratee = mock()
+    decoratee.perform.mockResolvedValue({ statusCode: 204, data: null })
   })
   beforeEach(() => {
     sut = new DbTransactionController(decoratee, db)
@@ -67,5 +70,10 @@ describe('DbTransactionController', () => {
     expect(db.rollback).toHaveBeenCalledTimes(1)
     expect(db.closeTransaction).toHaveBeenCalledWith()
     expect(db.closeTransaction).toHaveBeenCalledTimes(1)
+  })
+  it('should return same response of decoratee', async () => {
+    const response = await sut.perform({ any: 'any' })
+
+    expect(response).toEqual({ statusCode: 204, data: null })
   })
 })
