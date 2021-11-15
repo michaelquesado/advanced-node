@@ -5,5 +5,5 @@ export const makeUUIDHandler = (): UUIDHandler => {
 }
 
 export const makeUniqueIdHandler = (): UniqueId => {
-  return new UniqueId(new Date())
+  return new UniqueId()
 }
