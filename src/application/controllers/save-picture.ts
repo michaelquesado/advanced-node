@@ -1,7 +1,7 @@
 import { HttpResponse, ok } from '@/application/helpers'
 import { ChangeProfilePicture } from '@/domain/use-cases'
 import { Controller } from '@/application/controllers'
-import { Validator, ValidationBuilder as Builder } from '../validation'
+import { Validator, ValidationBuilder as Builder } from '@/application/validation'
 
 type HttpRequest = { file?: { buffer: Buffer, mimeType: string }, userId: string }
 type Model = { initials?: string, pictureUrl?: string }

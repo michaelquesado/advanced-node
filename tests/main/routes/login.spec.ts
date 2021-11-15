@@ -4,7 +4,7 @@ import { app } from '@/main/config/app'
 
 import { IBackup } from 'pg-mem'
 import request from 'supertest'
-import { makeFakeDB } from '@/../tests/infra/repos/postgres/mocks'
+import { makeFakeDB } from '@/tests/infra/repos/postgres/mocks'
 import { PgConnection } from '@/infra/repos/postgres/helpers'
 
 describe('Login Routes', () => {
